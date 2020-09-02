@@ -30,11 +30,11 @@ class _FirstScreenState extends State<FirstScreen> {
   loc.Location location = loc.Location();
   loc.PermissionStatus _permissionGranted;
   bool showLoader;
+  bool isLocationEnabled;
 
   @override
   void initState() {
     this.showLoader = false;
-
     super.initState();
   }
 
@@ -44,12 +44,21 @@ class _FirstScreenState extends State<FirstScreen> {
   }
 
   Future<void> _checkPermissions() async {
+    isLocationEnabled = await location.serviceEnabled();
     //showSnackBar('Working');
     final loc.PermissionStatus permissionGrantedResult =
         await location.hasPermission();
-    if (permissionGrantedResult == loc.PermissionStatus.granted) {
-      //this.checkBluetoothStatus();
+    if (permissionGrantedResult == loc.PermissionStatus.granted &&
+        isLocationEnabled) {
       getCurrentLocation();
+    } else if (!isLocationEnabled) {
+      isLocationEnabled = await location.requestService();
+      if (isLocationEnabled) {
+        _checkPermissions();
+      } else {
+        showSnackBar("Wee need location service to gather data!");
+        return;
+      }
     } else {
       this._requestPermission();
     }
@@ -63,9 +72,6 @@ class _FirstScreenState extends State<FirstScreen> {
         _checkPermissions();
       } else {
         showSnackBar('We need location permission, please allow and try again');
-        // setState(() {
-        //   this.isLocationDenied = true;
-        // });
       }
     }
   }
@@ -162,7 +168,6 @@ class _FirstScreenState extends State<FirstScreen> {
       var jsonResponse = convert.jsonDecode(response.body);
       var responseModel = WeatherResponseModel.fromMap(jsonResponse);
       navigateToScreen2(responseModel, currentAddress);
-      // this.showLoader = false;
       setState(() {
         this.showLoader = false;
       });
@@ -186,17 +191,6 @@ class _FirstScreenState extends State<FirstScreen> {
     );
   }
 
-  // void navigateToLoading(Position currPosition, String address) {
-  //   Navigator.push(
-  //     context,
-  //     new MaterialPageRoute(
-  //         builder: (context) => new LoadingScreen(
-  //               currentPosition: currPosition,
-  //               currentAddress: address,
-  //             )),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -207,10 +201,8 @@ class _FirstScreenState extends State<FirstScreen> {
               image: DecorationImage(
                   image: AssetImage("assets/imgs/BG.png"), fit: BoxFit.fill),
             ),
-            //color: Colors.white,
             child: Center(
               child: Lottie.asset(
-                // width
                 'assets/animations/starLoader.json',
                 fit: BoxFit.fill,
               ),

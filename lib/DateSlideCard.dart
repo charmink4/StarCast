@@ -17,7 +17,7 @@ class _DateSlideCardState extends State<DateSlideCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 8),
       decoration: BoxDecoration(
         color: widget.selecDate.day == widget.date.day
             ? Colors.white

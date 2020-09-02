@@ -60,22 +60,18 @@ class _SecondScreenState extends State<SecondScreen> {
           int length = element.cloudcover.length;
           element.cloudcover.forEach((element) {
             totalCloudCover = totalCloudCover + element.cover;
-            // if (element.time == '20:30') {
-            //   cloudCoverVal = element.cover.toString();
-            // }
           });
-          //cloudCoverVal = element.cloudcover.elementAt(1).cover.toString();
           double avgCloudCover = totalCloudCover / length;
           cloudCoverVal = avgCloudCover.toInt().toString();
           if (int.parse(cloudCoverVal) < 25 && int.parse(starLumos) > 40) {
             comment =
-                "Looks like today is a very good day to stargaze and hunt the constellations";
+                "Looks like is a very good day to stargaze and hunt the constellations";
           } else if (int.parse(cloudCoverVal) > 40) {
             comment =
                 "Seems as though a thick blanket of cloud's underway and it's going to hide all the stars!";
           } else {
             comment =
-                "It's not ideal, but you might still spot a few stars amidst the scarcely scattered clouds today!";
+                "It's not ideal, but you might still spot a few stars amidst the scarcely scattered clouds!";
           }
         }
       });
@@ -267,26 +263,27 @@ class _SecondScreenState extends State<SecondScreen> {
     return Container(
       padding: EdgeInsets.only(left: 10),
       margin: EdgeInsets.only(top: 5, bottom: 2),
-      height: 110,
+      height: 120,
       child: Container(
         child: ListView.builder(
-          itemCount: 6,
+          itemCount: 7,
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
             DateTime dte = DateTime.now();
             dte = dte.add(new Duration(days: index));
-
-            return GestureDetector(
-              child: DateSlideCard(
-                date: dte,
-                selecDate: selecDate,
+            return Container(
+              child: GestureDetector(
+                child: DateSlideCard(
+                  date: dte,
+                  selecDate: selecDate,
+                ),
+                onTap: () {
+                  setState(() {
+                    this.selecDate = dte;
+                  });
+                  getValues(this.selecDate);
+                },
               ),
-              onTap: () {
-                setState(() {
-                  this.selecDate = dte;
-                });
-                getValues(this.selecDate);
-              },
             );
           },
         ),
@@ -360,21 +357,14 @@ class _SecondScreenState extends State<SecondScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'Averta',
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage("assets/imgs/BG.png"), fit: BoxFit.fill),
       ),
-      home: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/imgs/BG.png"), fit: BoxFit.fill),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: getBody(width),
-        ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: getBody(width),
       ),
     );
   }
